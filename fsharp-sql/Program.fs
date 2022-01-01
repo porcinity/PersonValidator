@@ -43,19 +43,19 @@ let createPerson (name) =
     }
 let conn = new NpgsqlConnection(@"Host=localhost;Database=fsharp;Username=test;Password=test")
 
-//Console.WriteLine("Please enter a new person's name:")
-//let newPersonName = Console.ReadLine()
+Console.WriteLine("Please enter a new person's name:")
+let newPersonName = Console.ReadLine()
 
-//let name = PersonName.create newPersonName
-//
-//let test:PersonDto = {
-//    Id = 328142983
-//    Name = "Brain"
-//}
+let name = PersonName.create newPersonName
 
-//let saveme = PersonDto.create test
+let test:Person = {
+    Id = 328142983
+    Name = PersonName "Brain"
+}
 
-let savePerson person =
+let saveme = PersonDto.create test
+
+let savePerson (person:PersonDto) =
      task {
         let! post =
            insert {
@@ -66,7 +66,7 @@ let savePerson person =
         printfn "Success!"
         }
      
-//test |> savePerson
+savePerson saveme |> Async.AwaitTask |> Async.RunSynchronously
 
 
 //let vnewperson = newPersonName |> makePersonName |> createPerson |> savePerson |> Async.AwaitTask |> Async.RunSynchronously
