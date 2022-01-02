@@ -79,7 +79,6 @@ let savePerson (person:PersonDto) =
 Console.WriteLine("Enter a name:")
 let input = Console.ReadLine()
 
-
 let test () = task {
     let person = Person.create input
     match person with
@@ -90,6 +89,22 @@ let test () = task {
                 |> savePerson
             result
     | Error e -> printfn $"{e}"    
+}
+
+let test2 () = task {
+    let name = PersonName.create input
+    match name with
+    | Ok n ->
+        let! res =
+            let (person:Person) = {
+                Id = Random().Next()
+                Name = n
+            }
+            person
+            |> PersonDto.create
+            |> savePerson
+        res
+    | Error e -> printfn $"{e}"
 }
     
 let getEm () = task {
@@ -104,7 +119,7 @@ let getEm () = task {
     |> ignore
 }
 
-test () |> Async.AwaitTask |> Async.RunSynchronously
+test2 () |> Async.AwaitTask |> Async.RunSynchronously
 getEm() |> Async.AwaitTask |> Async.RunSynchronously
 
 //let createPerson (name) =
