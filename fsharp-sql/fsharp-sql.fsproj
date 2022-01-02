@@ -8,7 +8,6 @@
 
     <ItemGroup>
         <Compile Include="Program.fs" />
-        <None Include="test.fsx" />
     </ItemGroup>
 
     <ItemGroup>
