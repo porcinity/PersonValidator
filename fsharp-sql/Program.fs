@@ -1,12 +1,12 @@
 (* Dapper.Fsharp*)
 open System
-open System.Data
 open Dapper.FSharp
 open Dapper.FSharp.PostgreSQL
-open FSharp.Data.Sql.Providers
 open Microsoft.FSharp.Core
 open Npgsql
+
 type PersonName = PersonName of string
+
 module PersonName =
     let create s =
         match s with
@@ -31,37 +31,36 @@ module PersonAge =
     let unwrap (Ok (PersonAge i)) = PersonAge i
         
     let value (PersonAge x) = x
-        
-type Person =
-    {
-        Id : int
-        Name : PersonName
-        Age : PersonAge
-    }
-    
+
+type Person = {
+    Id : int
+    Name : PersonName
+    Age : PersonAge
+}
+
 module Person =
+    let id = Random().Next()
     
-//    let create (input:string) =
-//        match input with
-//        | "" -> Error "Cannot create person with blank name."
-//        | _ -> Ok
-//                {
-//                    Id = Random().Next()
-//                    Name = PersonName input
-//                }
-    
-    let makeWithPersonName name age =
+    let create name age =
         {
-            Id = Random().Next()
+            Id = id
             Name = name
             Age = age
         }
-         
-//    let ofDto (person:Person) =
-//        {
-//            Id = person.Id
-//            Name = PersonName.value person.Name
-//        }
+        
+    let tryCreate name age =
+        let name = PersonName.create name
+        let age = PersonAge.fromInt age
+        match name, age with
+        | Error e1, Error e2 -> Error $"{e1}\n{e2}"
+        | Error e, _ -> Error e
+        | _, Error e -> Error e
+        | Ok name, Ok age ->
+            {
+                Id = id
+                Name = name
+                Age = age
+            } |> Ok
 
 type PersonDto  =
         {
@@ -84,16 +83,16 @@ let conn = new NpgsqlConnection(@"Host=localhost;Database=fsharp;Username=test;P
 
 let personTable = table'<PersonDto> "persons" |> inSchema "public"
 
-let savePerson (person:PersonDto) =
-     task {
-        let! post =
-           insert {
-               into personTable
-               value person
-           }
-           |> conn.InsertAsync
-        printfn "Success!"
-        }
+let savePerson (person:PersonDto) = task {
+    let! post =
+       insert {
+           into personTable
+           value person
+       }
+       |> conn.InsertAsync
+//  printfn "Success!"
+    post
+}
 
 Console.WriteLine("Enter a name:")
 let input = Console.ReadLine()
@@ -138,12 +137,13 @@ let test3 () = task {
     let name = PersonName.create input
     let age = intAge inputAge |> PersonAge.fromInt
     match name, age with
+    | Error e1, Error e2 -> printfn $"{e1}\n{e2}"
     | Error e, _ -> printfn $"{e}"
     | _, Error e -> printfn $"{e}"
     | Ok n, Ok a ->
         printfn "did it!"
         let! res =
-            let person = Person.makeWithPersonName n a
+            let person = Person.create n a
             printfn $"{person}"
             person
             |> PersonDto.create
@@ -151,6 +151,26 @@ let test3 () = task {
         res
         
 }
+
+let test4 () = task {
+    let age = intAge inputAge
+    let person = Person.tryCreate input age
+    match person with
+    | Ok p ->
+        printfn $"Person to be saved to db: {p}"
+        let! res =
+            p
+            |> PersonDto.create
+            |> savePerson
+        res
+    | Error e -> printfn $"{e}"
+}
+  
+let showPeople p =
+    p
+    |> Seq.toList
+    |> List.map (fun x -> printfn $"ID: {x.Id}\nName: {x.Name}\nAge: {x.Age}")
+    |> ignore
     
 let getEm () = task {
     let! result =
@@ -158,13 +178,10 @@ let getEm () = task {
         for p in personTable do
             selectAll
         } |> conn.SelectAsync<PersonDto>
-    result
-    |> Seq.toList
-    |> List.map (fun x -> printfn $"ID: {x.Id}\nName: {x.Name}\nAge: {x.Age}")
-    |> ignore
+    result |> showPeople
 }
 
-test3().Wait()
+test4().Wait()
 getEm().Wait()
 
 (* *)
