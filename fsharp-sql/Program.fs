@@ -164,43 +164,9 @@ let getEm () = task {
     |> ignore
 }
 
-test3 () |> Async.AwaitTask |> Async.RunSynchronously
-getEm () |> Async.AwaitTask |> Async.RunSynchronously
+test3().Wait()
+getEm().Wait()
 
-//let createPerson (name) =
-//    {
-//        Id = 9
-//        Name = name
-//    }
-
-//
-//Console.WriteLine("Please enter a new person's name:")
-//let newPersonName = Console.ReadLine()
-//
-//let name = PersonName.create newPersonName
-//
-//let test:Person = {
-//    Id = 328142983
-//    Name = PersonName "mista mahn"
-//}
-//
-//let saveme = PersonDto.create test
-//
-//let reelPerson:Person =
-//    {
-//        Id = 234
-//        Name = name
-//    }
-//
-
-//
-//
-////let vnewperson = newPersonName |> makePersonName |> createPerson |> savePerson |> Async.AwaitTask |> Async.RunSynchronously
-//
-
-//
-//getEm |> Async.AwaitTask |> Async.RunSynchronously
-// 
 (* *)
 
 //open System
