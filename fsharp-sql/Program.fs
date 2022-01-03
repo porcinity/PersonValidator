@@ -90,10 +90,10 @@ let savePerson (person:PersonDto) = task {
 }
 
 Console.WriteLine("Enter a name:")
-let input = Console.ReadLine()
+let userNameInput = Console.ReadLine()
 
 Console.WriteLine("Enter an age:")
-let inputAge = Console.ReadLine()
+let userAgeInput = Console.ReadLine()
 let intAge (s:string) = s |> int
     
     
@@ -129,8 +129,8 @@ let intAge (s:string) = s |> int
 //}
 
 let test3 () = task {
-    let name = PersonName.create input
-    let age = intAge inputAge |> PersonAge.fromInt
+    let name = PersonName.create userNameInput
+    let age = intAge userAgeInput |> PersonAge.fromInt
     match name, age with
     | Error e1, Error e2 -> printfn $"{e1}\n{e2}"
     | Error e, _ -> printfn $"{e}"
@@ -148,8 +148,8 @@ let test3 () = task {
 }
 
 let test4 () = task {
-    let age = intAge inputAge
-    let person = Person.tryCreate input age
+    let age = intAge userAgeInput
+    let person = Person.tryCreate userNameInput age
     match person with
     | Ok p ->
         printfn $"Person to be saved to db: {p}"
@@ -161,7 +161,7 @@ let test4 () = task {
     | Error e -> printfn $"{e}"
 }
 
-let apply fResult xResult = // Result<('a -> 'b), 'c list> -> Result<'a,'c list> -> Result<'b,'c list>
+let apply fResult xResult =
     match fResult,xResult with
     | Ok f, Ok x -> Ok (f x)
     | Error ex, Ok _ -> Error ex
@@ -171,15 +171,23 @@ let apply fResult xResult = // Result<('a -> 'b), 'c list> -> Result<'a,'c list>
 let (<!>) = Result.map
 let (<*>) = apply
 
-let applicativeTest () = task{
-    let name = PersonName.create input
-    let age = PersonAge.fromInt <| intAge inputAge
-    let saveMe = Person.create <!> name <*> age
-    match saveMe with
+let validatePerson name age =
+    let name = PersonName.create name
+    let age = PersonAge.fromInt age
+    Person.create <!> name <*> age
+
+let applicativeSave person = task {
+    match person with
     | Ok p ->
         let! res = p |> PersonDto.create |> savePerson
         res
-    | Error e -> e |> List.map (fun e -> printfn $"Error: {e}")
+    | Error e -> e |> List.map (fun e -> printfn $"Error: {e}")   
+}
+    
+let applicativeTest () = task {
+    let person = validatePerson userNameInput (intAge userAgeInput)
+    let! res = applicativeSave person
+    res
 }
   
 let showPeople p =
