@@ -3,17 +3,15 @@ open System
 open Dapper.FSharp
 open Dapper.FSharp.PostgreSQL
 open Microsoft.FSharp.Core
-open Npgsql
+open Npgsql 
 
 type PersonName = PersonName of string
 
 module PersonName =
     let create s =
         match s with
-        | "" -> Error "Cannot be blank"
+        | "" -> Error ["Cannot be blank"]
         | _ -> PersonName s |> Ok 
-        
-    let unwrap (Ok (PersonName p)) = PersonName p
     
     let value = function
         PersonName p -> p
@@ -21,14 +19,11 @@ module PersonName =
 type PersonAge = PersonAge of int
 
 module PersonAge =
-    
     let fromInt x =
         match x with
-        | x when x > 100 -> Error "Too old."
-        | x when x < 1 -> Error "Too young."
+        | x when x > 100 -> Error ["Too old."]
+        | x when x < 1 -> Error ["Too young."]
         | _ -> PersonAge x |> Ok
-        
-    let unwrap (Ok (PersonAge i)) = PersonAge i
         
     let value (PersonAge x) = x
 
@@ -52,9 +47,9 @@ module Person =
         let name = PersonName.create name
         let age = PersonAge.fromInt age
         match name, age with
-        | Error e1, Error e2 -> Error $"{e1}\n{e2}"
-        | Error e, _ -> Error e
-        | _, Error e -> Error e
+        | Error e1, Error e2 -> Error [List.concat [e1;e2]]
+        | Error e, _ -> Error [e]
+        | _, Error e -> Error [e]
         | Ok name, Ok age ->
             {
                 Id = id
@@ -165,6 +160,27 @@ let test4 () = task {
         res
     | Error e -> printfn $"{e}"
 }
+
+let apply fResult xResult = // Result<('a -> 'b), 'c list> -> Result<'a,'c list> -> Result<'b,'c list>
+    match fResult,xResult with
+    | Ok f, Ok x -> Ok (f x)
+    | Error ex, Ok _ -> Error ex
+    | Ok _, Error ex -> Error ex
+    | Error ex1, Error ex2 -> Error (List.concat [ex1; ex2])
+
+let (<!>) = Result.map
+let (<*>) = apply
+
+let applicativeTest () = task{
+    let name = PersonName.create input
+    let age = PersonAge.fromInt <| intAge inputAge
+    let saveMe = Person.create <!> name <*> age
+    match saveMe with
+    | Ok p ->
+        let! res = p |> PersonDto.create |> savePerson
+        res
+    | Error e -> e |> List.map (fun e -> printfn $"Error: {e}")
+}
   
 let showPeople p =
     p
@@ -181,7 +197,7 @@ let getEm () = task {
     result |> showPeople
 }
 
-test4().Wait()
+applicativeTest().Wait()
 getEm().Wait()
 
 (* *)
