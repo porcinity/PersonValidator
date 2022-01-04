@@ -138,14 +138,19 @@ let prompt () =
     (userNameInput, userAgeInput)
 
 let applicativeTest () = task {
-    let userNameInput, userAgeInput = prompt ()    
-    let intAge (s:string) = s |> int
-    let person = validatePerson userNameInput (intAge userAgeInput)
-    let! res = applicativeSave person
-    res
+    let testPrompt = prompt ()
+    match testPrompt with
+    | Ok (x, y) -> 
+        let intAge (s:string) = s |> int
+        let person = validatePerson x y
+        let! res = applicativeSave person
+        res
+    | Error e -> printfn $"{e}"
 }
 
 let showPeople (p:seq<PersonDto>) =
+    Console.Clear()
+    Console.WriteLine("Here are the people in the database:")
     p
     |> Seq.toList
     |> List.map (fun x -> printfn $"ID: {x.Id}\nName: {x.Name}\nAge: {x.Age}")
