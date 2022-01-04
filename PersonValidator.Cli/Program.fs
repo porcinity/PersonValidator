@@ -124,6 +124,11 @@ let applicativeSave person = task {
         |> ignore
 }
 
+let tryParse (x:string) =
+    match System.Int32.TryParse x with
+    | true, x -> Ok x
+    | false, _ -> Error "Enter a valid number."
+
 let prompt () =
     Console.WriteLine("Enter a name:")
     let userNameInput = Console.ReadLine()
