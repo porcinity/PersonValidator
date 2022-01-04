@@ -66,15 +66,16 @@ module Person =
                  Age = age }
 
 type PersonDto  =
-        { Id : int
+        { Id : Guid
           Name : string
           Age : int }
         
 module PersonDto =
     let create (person:Person) =
+        let id = PersonId.value person.Id
         let name = PersonName.value person.Name
         let age = PersonAge.value person.Age
-        { Id = person.Id
+        { Id = id
           Name = name
           Age = age }
 
