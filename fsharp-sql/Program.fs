@@ -57,28 +57,22 @@ module Person =
         | Error e, _ -> Error [e]
         | _, Error e -> Error [e]
         | Ok name, Ok age ->
-            {
-                Id = id
-                Name = name
-                Age = age
-            } |> Ok
+            Ok { Id = id
+                 Name = name
+                 Age = age }
 
 type PersonDto  =
-        {
-            Id : int
-            Name : string
-            Age : int
-        }
+        { Id : int
+          Name : string
+          Age : int }
         
 module PersonDto =
     let create (person:Person) =
         let name = PersonName.value person.Name
         let age = PersonAge.value person.Age
-        {
-            Id = person.Id
-            Name = name
-            Age = age
-        }
+        { Id = person.Id
+          Name = name
+          Age = age }
 
 let conn = new NpgsqlConnection(@"Host=localhost;Database=fsharp;Username=test;Password=test")
 
