@@ -3,7 +3,8 @@ open System
 open Dapper.FSharp
 open Dapper.FSharp.PostgreSQL
 open Microsoft.FSharp.Core
-open Npgsql 
+open Npgsql
+open Spectre.Console 
 
 type PersonId = PersonId of Guid
 module PersonId =
@@ -139,11 +140,18 @@ let applicativeTest () = task {
     res
 }
 
-let showPeople p =
-    p
-    |> Seq.toList
-    |> List.map (fun x -> printfn $"ID: {x.Id}\nName: {x.Name}\nAge: {x.Age}")
-    |> ignore
+let showPeople (p:seq<PersonDto>) =
+    let peeps = Seq.toList p
+    let table = Table().Centered()
+    let columns = ["Name"]
+    for column in columns do
+        table.AddColumn column |> ignore
+    
+    for person in peeps do
+        table.AddRow(person.Name) |> ignore
+    
+    AnsiConsole.Write table
+
 
 let getEm () = task {
     let! result =
