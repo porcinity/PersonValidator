@@ -5,6 +5,10 @@ open Dapper.FSharp.PostgreSQL
 open Microsoft.FSharp.Core
 open Npgsql 
 
+type PersonId = PersonId of Guid
+module PersonId =
+    let value (PersonId id) = id
+    
 type PersonName = PersonName of string
 
 module PersonName =
