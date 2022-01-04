@@ -112,9 +112,15 @@ let validatePerson name age =
 let applicativeSave person = task {
     match person with
     | Ok p ->
-        let! res = p |> PersonDto.create |> savePerson
+        let! res =
+            p
+            |> PersonDto.create
+            |> savePerson
         res
-    | Error e -> e |> List.map (fun e -> printfn $"Error: {e}")   
+    | Error e ->
+        e
+        |> List.map (fun e -> printfn $"Error: {e}")
+        |> ignore
 }
 
 let prompt () =
@@ -126,7 +132,7 @@ let prompt () =
     (userNameInput, userAgeInput)
 
 let applicativeTest () = task {
-    let (userNameInput, userAgeInput) = prompt ()    
+    let userNameInput, userAgeInput = prompt ()    
     let intAge (s:string) = s |> int
     let person = validatePerson userNameInput (intAge userAgeInput)
     let! res = applicativeSave person
