@@ -184,6 +184,8 @@ let prompt () =
     (userNameInput, userAgeInput)
 
 let applicativeTest () = task {
+    let (userNameInput, userAgeInput) = prompt ()    
+    let intAge (s:string) = s |> int
     let person = validatePerson userNameInput (intAge userAgeInput)
     let! res = applicativeSave person
     res
