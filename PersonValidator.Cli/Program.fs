@@ -135,7 +135,10 @@ let prompt () =
 
     Console.WriteLine("Enter an age:")
     let userAgeInput = Console.ReadLine()
-    (userNameInput, userAgeInput)
+    let parsedAge = tryParse userAgeInput
+    match parsedAge with
+    | Ok i -> Ok (userNameInput, i)
+    | Error e -> Error [$"{e}"]
 
 let applicativeTest () = task {
     let testPrompt = prompt ()
