@@ -38,15 +38,14 @@ module PersonAge =
     let value (PersonAge x) = x
 
 type Person = {
-    Id : int
+    Id : PersonId
     Name : PersonName
     Age : PersonAge
 }
 
 module Person =
-    let id = Random().Next()
-    
     let create name age =
+        let id = PersonId <| Guid.NewGuid()
         {
             Id = id
             Name = name
@@ -54,6 +53,7 @@ module Person =
         }
         
     let tryCreate name age =
+        let id = PersonId <| Guid.NewGuid()
         let name = PersonName.create name
         let age = PersonAge.fromInt age
         match name, age with
