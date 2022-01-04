@@ -88,16 +88,7 @@ let savePerson personDto = task {
     post |> ignore
     printfn "Successfully validated and saved entry!"
 }
-
-Console.WriteLine("Enter a name:")
-let userNameInput = Console.ReadLine()
-
-Console.WriteLine("Enter an age:")
-let userAgeInput = Console.ReadLine()
-let intAge (s:string) = s |> int
     
-    
-
 //let test () = task {
 //    let person = Person.create input
 //    match person with
@@ -183,6 +174,14 @@ let applicativeSave person = task {
         res
     | Error e -> e |> List.map (fun e -> printfn $"Error: {e}")   
 }
+
+let prompt () =
+    Console.WriteLine("Enter a name:")
+    let userNameInput = Console.ReadLine()
+
+    Console.WriteLine("Enter an age:")
+    let userAgeInput = Console.ReadLine()
+    (userNameInput, userAgeInput)
 
 let applicativeTest () = task {
     let person = validatePerson userNameInput (intAge userAgeInput)
