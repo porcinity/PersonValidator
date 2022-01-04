@@ -81,7 +81,7 @@ module PersonDto =
 
 let conn = new NpgsqlConnection(@"Host=localhost;Database=fsharp;Username=test;Password=test")
 
-let personTable = table'<PersonDto> "persons" |> inSchema "public"
+let personTable = table'<PersonDto> "people" |> inSchema "public"
 
 let savePerson personDto = task {
     let! post =
