@@ -19,11 +19,17 @@ module PersonName =
 type PersonAge = PersonAge of int
 
 module PersonAge =
-    let fromInt x =
-        match x with
-        | x when x > 100 -> Error ["Too old."]
-        | x when x < 1 -> Error ["Too young."]
-        | _ -> PersonAge x |> Ok
+    let (|TooOld|TooYoung|GoodAge|) n =
+        match n with
+        | x when x > 100 -> TooOld
+        | x when x < 1 -> TooYoung
+        | _ -> GoodAge
+    
+    let fromInt n =
+        match n with
+        | TooOld -> Error ["Too old."]
+        | TooYoung -> Error ["Too young."]
+        | GoodAge -> Ok <| PersonAge n
         
     let value (PersonAge x) = x
 
