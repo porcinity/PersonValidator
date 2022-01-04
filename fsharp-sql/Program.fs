@@ -183,19 +183,19 @@ let applicativeSave person = task {
         res
     | Error e -> e |> List.map (fun e -> printfn $"Error: {e}")   
 }
-    
+
 let applicativeTest () = task {
     let person = validatePerson userNameInput (intAge userAgeInput)
     let! res = applicativeSave person
     res
 }
-  
+
 let showPeople p =
     p
     |> Seq.toList
     |> List.map (fun x -> printfn $"ID: {x.Id}\nName: {x.Name}\nAge: {x.Age}")
     |> ignore
-    
+
 let getEm () = task {
     let! result =
         select {
@@ -204,6 +204,7 @@ let getEm () = task {
         } |> conn.SelectAsync<PersonDto>
     result |> showPeople
 }
+
 
 applicativeTest().Wait()
 getEm().Wait()
