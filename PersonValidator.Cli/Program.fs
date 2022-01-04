@@ -78,15 +78,15 @@ let conn = new NpgsqlConnection(@"Host=localhost;Database=fsharp;Username=test;P
 
 let personTable = table'<PersonDto> "persons" |> inSchema "public"
 
-let savePerson (person:PersonDto) = task {
+let savePerson personDto = task {
     let! post =
        insert {
            into personTable
-           value person
+           value personDto
        }
        |> conn.InsertAsync
-//  printfn "Success!"
-    post
+    post |> ignore
+    printfn "Successfully validated and saved entry!"
 }
 
 Console.WriteLine("Enter a name:")
