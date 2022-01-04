@@ -88,69 +88,6 @@ let savePerson personDto = task {
     post |> ignore
     printfn "Successfully validated and saved entry!"
 }
-    
-//let test () = task {
-//    let person = Person.create input
-//    match person with
-//    | Ok p ->
-//            let! result =
-//                p
-//                |> PersonDto.create
-//                |> savePerson
-//            result
-//    | Error e -> printfn $"{e}"    
-//}
-
-//let test2 () = task {
-//    let name = PersonName.create input
-//    let age = PersonAge.fromInt 18
-//    match name with
-//    | Ok n ->
-//        let! res =
-//            let (person:Person) = {
-//                Id = Random().Next()
-//                Name = n
-//                Age = age
-//            }
-//            person
-//            |> PersonDto.create
-//            |> savePerson
-//        res
-//    | Error e -> printfn $"{e}"
-//}
-
-let test3 () = task {
-    let name = PersonName.create userNameInput
-    let age = intAge userAgeInput |> PersonAge.fromInt
-    match name, age with
-    | Error e1, Error e2 -> printfn $"{e1}\n{e2}"
-    | Error e, _ -> printfn $"{e}"
-    | _, Error e -> printfn $"{e}"
-    | Ok n, Ok a ->
-        printfn "did it!"
-        let! res =
-            let person = Person.create n a
-            printfn $"{person}"
-            person
-            |> PersonDto.create
-            |> savePerson
-        res
-        
-}
-
-let test4 () = task {
-    let age = intAge userAgeInput
-    let person = Person.tryCreate userNameInput age
-    match person with
-    | Ok p ->
-        printfn $"Person to be saved to db: {p}"
-        let! res =
-            p
-            |> PersonDto.create
-            |> savePerson
-        res
-    | Error e -> printfn $"{e}"
-}
 
 let apply fResult xResult =
     match fResult,xResult with
