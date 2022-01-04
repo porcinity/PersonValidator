@@ -168,17 +168,27 @@ let getEm () = task {
     result |> showPeople
 }
 
-
-let rec addPeeps () =
+let addPeeps () =
     applicativeTest().Wait()
-    Console.WriteLine("Add another person? y/n")
-    let res = Console.ReadKey().Key
-    match res with
-    | ConsoleKey.Y -> addPeeps ()
-    | ConsoleKey.N -> getEm().Wait()
-    | _ -> printfn "Please enter a valid choice."
-    
-addPeeps ()
+
+let rec additionalPrompt () =
+        Console.WriteLine("Add another person? y/n")
+        let res = Console.ReadKey().Key
+        match res with
+        | ConsoleKey.Y ->
+            addPeeps ()
+            additionalPrompt ()
+        | ConsoleKey.N -> getEm().Wait()
+        | _ ->
+            Console.Clear()
+            printfn "Please enter a valid choice:"
+            additionalPrompt ()
+            
+let main () =
+    addPeeps ()
+    additionalPrompt ()
+
+main ()
 
 (* *)
 
