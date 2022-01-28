@@ -1,10 +1,8 @@
-(* Dapper.Fsharp*)
 open System
 open Dapper.FSharp
 open Dapper.FSharp.PostgreSQL
 open Microsoft.FSharp.Core
 open Npgsql
-
 
 type PersonId = PersonId of Guid
 module PersonId =
