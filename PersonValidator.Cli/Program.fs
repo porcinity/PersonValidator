@@ -173,8 +173,7 @@ let addPeeps () =
 
 let rec additionalPrompt () =
         Console.WriteLine("Add another person? y/n")
-        let res = Console.ReadKey().Key
-        match res with
+        match Console.ReadKey().Key with
         | ConsoleKey.Y ->
             addPeeps ()
             additionalPrompt ()
@@ -184,6 +183,6 @@ let rec additionalPrompt () =
             printfn "Please enter a valid choice:"
             additionalPrompt ()
             
-let main () =
+let main =
     addPeeps ()
     additionalPrompt ()
