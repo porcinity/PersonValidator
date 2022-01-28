@@ -4,7 +4,7 @@ open Dapper.FSharp
 open Dapper.FSharp.PostgreSQL
 open Microsoft.FSharp.Core
 open Npgsql
-open Spectre.Console 
+
 
 type PersonId = PersonId of Guid
 module PersonId =
