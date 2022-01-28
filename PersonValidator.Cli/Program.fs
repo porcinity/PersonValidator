@@ -144,11 +144,13 @@ let applicativeTest () = task {
     let testPrompt = prompt ()
     match testPrompt with
     | Ok (x, y) -> 
-        let intAge (s:string) = s |> int
         let person = validatePerson x y
         let! res = applicativeSave person
         res
-    | Error e -> printfn $"{e}"
+    | Error e ->
+        e
+        |> List.map (fun e -> printfn $"Error: {e}")
+        |> ignore
 }
 
 let showPeople (p:seq<PersonDto>) =
