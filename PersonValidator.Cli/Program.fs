@@ -125,7 +125,7 @@ let applicativeSave person = task {
 }
 
 let tryParse (x:string) =
-    match System.Int32.TryParse x with
+    match Int32.TryParse x with
     | true, x -> Ok x
     | false, _ -> Error "Enter a valid number."
 
