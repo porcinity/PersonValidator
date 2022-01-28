@@ -1,3 +1,5 @@
+open Microsoft.FSharp.Core
+
 let (<!>) = Option.map
 
 let (<*>) fOpt xOpt =
@@ -54,3 +56,35 @@ let testNum n =
     match n with
     | Even -> printfn "%i is even" n
     | Odd -> printfn "%i is odd" n;;
+    
+let tryParse' (x:string) =
+    match System.Int32.TryParse x with
+    | true, x -> Some x
+    | false, _ -> None
+    
+let printNum num =
+    match num with
+    | Some n -> printfn $"The number is: {n}"
+    | None -> printfn "Ruh roh!"
+    
+let nums = [ "1"; "2"; "3" ]
+
+let over5 x =
+    match x with
+    | x when x > 5 -> Some x
+    | _ -> None
+    
+let plusOne x = Some <| x + 1
+let minus2 x = Some <| x - 2
+
+6
+|> over5
+|> Option.bind plusOne
+|> Option.bind minus2
+|> Option.bind over5
+
+let (>>=) x f = Option.bind f x
+
+let res = 6 |> over5 >>= plusOne >>= minus2 >>= over5
+
+3 |> over5 |> Option.bind plusOne
